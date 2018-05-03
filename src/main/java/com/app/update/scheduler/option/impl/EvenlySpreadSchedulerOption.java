@@ -3,6 +3,7 @@ package com.app.update.scheduler.option.impl;
 import java.util.List;
 
 import com.app.update.scheduler.jamfpro.api.JssApi;
+import com.app.update.scheduler.option.TimeFrame;
 
 import javafx.concurrent.Task;
 import javafx.scene.text.Text;
@@ -14,11 +15,20 @@ public class EvenlySpreadSchedulerOption extends Task<Boolean> {
 	private JssApi jssApi;
 	private List<Integer> deviceIdList;
 	private Text actiontarget;
+	private double startTime = 0;
+	private double endTime = 86400; // Number of seconds in a day
 	
 	public EvenlySpreadSchedulerOption(JssApi jssApi, List<Integer> deviceIdList, Text actiontarget) {
 		this.jssApi = jssApi;
 		this.deviceIdList = deviceIdList;
 		this.actiontarget = actiontarget;
+	}
+	
+	public EvenlySpreadSchedulerOption(JssApi jssApi, List<Integer> deviceIdList, Text actiontarget, TimeFrame timeFrameStart, TimeFrame timeFrameEnd) {
+		this(jssApi, deviceIdList, actiontarget);
+		
+		startTime = timeFrameStart.calculateNumberOfSecondsFromMidnight();
+		endTime = timeFrameEnd.calculateNumberOfSecondsFromMidnight();
 	}
 
 	@Override
@@ -26,8 +36,7 @@ public class EvenlySpreadSchedulerOption extends Task<Boolean> {
 		
 		actiontarget.setText("Status: Calculating spread of application updates");
 		
-		double startTime = 0;
-		double spread = 86400 / new Double(deviceIdList.size());
+		double spread = endTime / new Double(deviceIdList.size());
 		
 		try {
 			actiontarget.setText("Status: Updating application update schedules");

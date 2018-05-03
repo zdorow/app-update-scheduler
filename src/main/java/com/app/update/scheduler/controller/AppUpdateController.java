@@ -14,7 +14,6 @@ import com.app.update.scheduler.jaxb.JaxbObjectConverter;
 import com.app.update.scheduler.option.AppUpdateSchedulerOption;
 import com.app.update.scheduler.option.TimeFrame;
 import com.app.update.scheduler.option.impl.EvenlySpreadSchedulerOption;
-import com.app.update.scheduler.option.impl.TimeFrameSchedulerOption;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -99,7 +98,7 @@ public class AppUpdateController implements Initializable {
 					TimeFrame timeFrameStart = TimeFrame.fromDisplayText(timeFrameStartOptions.getValue());
 					TimeFrame timeFrameEnd = TimeFrame.fromDisplayText(timeFrameEndOptions.getValue());
 					
-					scheduler = new TimeFrameSchedulerOption(jssApi, deviceIdList, actiontarget, timeFrameStart, timeFrameEnd);
+					scheduler = new EvenlySpreadSchedulerOption(jssApi, deviceIdList, actiontarget, timeFrameStart, timeFrameEnd);
 					break;
 				default:
 					break;
