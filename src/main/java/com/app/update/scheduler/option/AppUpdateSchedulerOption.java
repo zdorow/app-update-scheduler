@@ -5,7 +5,7 @@ public enum AppUpdateSchedulerOption {
 	EvenlySpread("Evenly spread throughout the day"), 
 	TimeInterval("Use a specific time interval");
 	
-	private String displayText;
+	private final String displayText;
 	
 	AppUpdateSchedulerOption(String displayText) {
 		this.displayText = displayText;

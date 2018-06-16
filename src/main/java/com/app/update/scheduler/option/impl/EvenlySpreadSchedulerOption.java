@@ -3,6 +3,7 @@ package com.app.update.scheduler.option.impl;
 import java.util.List;
 
 import com.app.update.scheduler.jamfpro.api.JssApi;
+import com.app.update.scheduler.jamfpro.api.JssApiException;
 
 import javafx.concurrent.Task;
 import javafx.scene.text.Text;
@@ -11,9 +12,9 @@ public class EvenlySpreadSchedulerOption extends Task<Boolean> {
 	
 	private static final String updateXml = "<mobile_device_application><general><itunes_sync_time>%d</itunes_sync_time></general></mobile_device_application>";
 	
-	private JssApi jssApi;
-	private List<Integer> deviceIdList;
-	private Text actiontarget;
+	private final JssApi jssApi;
+	private final List<Integer> deviceIdList;
+	private final Text actiontarget;
 	
 	public EvenlySpreadSchedulerOption(JssApi jssApi, List<Integer> deviceIdList, Text actiontarget) {
 		this.jssApi = jssApi;
@@ -24,24 +25,28 @@ public class EvenlySpreadSchedulerOption extends Task<Boolean> {
 	@Override
 	protected Boolean call() throws Exception {
 		
-		actiontarget.setText("Status: Calculating spread of application updates");
-		
+		actiontarget.setText("Calculating spread of application updates");
+		int count=0;
 		double startTime = 0;
 		double spread = 86400 / new Double(deviceIdList.size());
 		
 		try {
-			actiontarget.setText("Status: Updating application update schedules");
+			actiontarget.setText("Updating application update schedules");
 			
 			for (int id : deviceIdList) {
+                            
 				jssApi.put("mobiledeviceapplications/id/" + id, String.format(updateXml, Math.round(startTime)));
-				//updateProgress(id, deviceIdList.size());
-				startTime = startTime + spread;
+
+				updateProgress(count, deviceIdList.size());
+                                count++;
+				startTime += spread;
 			}
-		} catch (Exception e) {
+                        updateProgress(1, 1);
+		} catch (JssApiException e) {
 			actiontarget.setText("There was an error while processing app updates.");
 			return false;
 		}
-		
+                
 		return true;
 	}
 }

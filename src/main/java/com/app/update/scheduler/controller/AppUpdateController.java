@@ -1,5 +1,6 @@
 package com.app.update.scheduler.controller;
 
+import com.app.update.scheduler.applicaitonlistget.ApplicationListGet;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +26,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+
 
 public class AppUpdateController implements Initializable {
 	
@@ -57,69 +60,75 @@ public class AppUpdateController implements Initializable {
 	
 	@FXML
 	private Text actiontarget;
+        
+        @FXML
+	private ProgressBar progressBar;
 	
 	@FXML
-	protected void handleSubmitButtonAction(ActionEvent event) {
-            
+	protected void handleSubmitButtonAction(ActionEvent event)  {
 		// Clear any existing text
-		actiontarget.setText("");
-		
+               actiontarget.setText("");
+
 		AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(appSchedulerOptions.getValue());
 		JssApi jssApi = new JssApi(jamfProServerUrl.getText(), userName.getText(), password.getText(), FORMAT.XML, FORMAT.XML);
-		
-		try { 
-			actiontarget.setText("Status: Gathering information on Mobile Device Applications");
-			
-			String result = jssApi.get("mobiledeviceapplications");
-			MobileDeviceApplications mobileDeviceApplications = JaxbObjectConverter.unmarshall(MobileDeviceApplications.class, result);
-			
-			List<Integer> deviceIdList = new ArrayList<>();
-			
-			for (MobileDeviceApplicationShell appShell : mobileDeviceApplications.getMobileDeviceApplicationList()) {
-				String applicationString = jssApi.get("mobiledeviceapplications/id/" + appShell.getId() + "/subset/General");
-				MobileDeviceApplication application = JaxbObjectConverter.unmarshall(MobileDeviceApplication.class, applicationString);
-				
-				if (application.getGeneral() != null && application.getGeneral().isKeepDescriptionAndIconUpToDate()) {
-					deviceIdList.add(application.getGeneral().getId());
-				}
-			}
-			
-			System.out.println("Checking size of device ID list");
-			if (deviceIdList.isEmpty()) {
-				actiontarget.setText("No applications were found with app updates set.");
-				return;
-			}
-			
-			Task<Boolean> scheduler = null;
+
+		try {
+
+			ApplicationListGet applicationList = new ApplicationListGet(jssApi, actiontarget);
+                        List<Integer> deviceIdList = applicationList.getDeviceIdList();
 			
 			switch (schedulerOption) {
 				case EvenlySpread:
-					scheduler = new EvenlySpreadSchedulerOption(jssApi, deviceIdList, actiontarget);
+                                    Task<Boolean> scheduler = new EvenlySpreadSchedulerOption(jssApi, deviceIdList, actiontarget);
+                                    
+                                    progressBar.progressProperty().bind(scheduler.progressProperty());
+                                    
+                                    Thread myThread = new Thread(scheduler);
+                                    myThread.start();
+                                          scheduler.setOnSucceeded(e -> {                
+                                    actiontarget.setText("Done scheduling apps ");
+                                    });
+                                       
+
 					break;
 				case TimeInterval:
 					TimeFrame timeFrameStart = TimeFrame.fromDisplayText(timeFrameStartOptions.getValue());
 					TimeFrame timeFrameEnd = TimeFrame.fromDisplayText(timeFrameEndOptions.getValue());
 					
-					scheduler = new TimeFrameSchedulerOption(jssApi, deviceIdList, actiontarget, timeFrameStart, timeFrameEnd);
+                                        Task<Boolean> scheduler1 = new TimeFrameSchedulerOption(jssApi, deviceIdList, actiontarget, timeFrameStart, timeFrameEnd);
+                                        
+                                        progressBar.progressProperty().bind(scheduler1.progressProperty());
+                                        
+                                        Thread myThread1 = new Thread(scheduler1);
+                                        myThread1.start();
+                                        
+                                              scheduler1.setOnSucceeded(e -> {                
+                    actiontarget.setText("Done scheduling apps ");
+            });
+      scheduler1.setOnFailed(e ->
+      {                
+                    Integer Response = jssApi.getLastResponseCode();
+            switch (Response) {
+                case 401:
+                    actiontarget.setText("Username and/or password not accepted.");
+                    break;
+                case 0:
+                    actiontarget.setText("URL was not found.");
+                    break;
+                default:
+                    actiontarget.setText("Something really went wrong. Please file an issue on Github1");
+                    break;
+            }
+                            });
+                                        
 					break;
 				default:
 					break;
 			}
-			
-			scheduler.run();
-			
-			boolean success = scheduler.get();
-			
-			if (success) {
-				actiontarget.setText("The operation has completed successfully.");
-			}
-			
-		} catch (Exception e) {
-			actiontarget.setText("There was an error processing your request.");
-		}
-
-	}
-
+	} catch(Exception e){
+            actiontarget.setText("Something really went wrong. Please file an issue on Github2");
+                }
+        }
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
@@ -142,11 +151,11 @@ public class AppUpdateController implements Initializable {
 					AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(observable.getValue());
 					
 					if (schedulerOption == AppUpdateSchedulerOption.TimeInterval) {
-						timeFrameLabel.setVisible(true);
-						timeFrameOptions.setVisible(true);
+						timeFrameLabel.setDisable(false);
+						timeFrameOptions.setDisable(false);
 					} else {
-						timeFrameLabel.setVisible(false);
-						timeFrameOptions.setVisible(false);
+						timeFrameLabel.setDisable(true);
+						timeFrameOptions.setDisable(true);
 					}
 				} catch (Exception e) {  }
 			}

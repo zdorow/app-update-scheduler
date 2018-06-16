@@ -3,7 +3,9 @@ package com.app.update.scheduler.option.impl;
 import java.util.List;
 
 import com.app.update.scheduler.jamfpro.api.JssApi;
+import com.app.update.scheduler.jamfpro.api.JssApiException;
 import com.app.update.scheduler.option.TimeFrame;
+import java.util.logging.Logger;
 
 import javafx.concurrent.Task;
 import javafx.scene.text.Text;
@@ -11,12 +13,13 @@ import javafx.scene.text.Text;
 public class TimeFrameSchedulerOption extends Task<Boolean> {
 	
 	private static final String updateXml = "<mobile_device_application><general><itunes_sync_time>%d</itunes_sync_time></general></mobile_device_application>";
+        private static final Logger LOG = Logger.getLogger(TimeFrameSchedulerOption.class.getName());
 
-	private JssApi jssApi;
-	private List<Integer> deviceIdList;
-	private Text actiontarget;
-	private TimeFrame timeFrameStart;
-	private TimeFrame timeFrameEnd;
+	private final JssApi jssApi;
+	private final List<Integer> deviceIdList;
+	private final Text actiontarget;
+	private final TimeFrame timeFrameStart;
+	private final TimeFrame timeFrameEnd;
 	
 	public TimeFrameSchedulerOption(JssApi jssApi, List<Integer> deviceIdList, Text actiontarget, TimeFrame timeFrameStart, TimeFrame timeFrameEnd) {
 		this.jssApi = jssApi;
@@ -29,24 +32,26 @@ public class TimeFrameSchedulerOption extends Task<Boolean> {
 	@Override
 	protected Boolean call() throws Exception {
 		
-		actiontarget.setText("Status: Calculating spread of application updates");
+		actiontarget.setText("Calculating spread of application updates");
 		
 		try {
+                        int count=0;
 			double startTime = timeFrameStart.calculateNumberOfSecondsFromMidnight();
 			double endTime = timeFrameEnd.calculateNumberOfSecondsFromMidnight();
 			
 			double spread = endTime / new Double(deviceIdList.size());
 		
-			actiontarget.setText("Status: Updating application update schedules");
+			actiontarget.setText("Updating application update schedules");
 			
 			for (int id : deviceIdList) {
 				jssApi.put("mobiledeviceapplications/id/" + id, String.format(updateXml, Math.round(startTime)));
-                                
-				//updateProgress(id, deviceIdList.size());
-				startTime = startTime + spread;
+				
+				updateProgress(count, deviceIdList.size());
+                                count++;
+				startTime += spread;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+                        updateProgress(1, 1);
+		} catch (JssApiException e) {
 			actiontarget.setText("There was an error while processing app updates.");
 			return false;
 		}
