@@ -1,16 +1,16 @@
 package com.app.update.scheduler.option.impl;
 
-import java.util.List;
-
 import com.app.update.scheduler.jamfpro.api.JssApi;
 import com.app.update.scheduler.jamfpro.api.JssApiException;
-
+import java.util.List;
+import java.util.logging.Logger;
 import javafx.concurrent.Task;
 import javafx.scene.text.Text;
 
 public class EvenlySpreadSchedulerOption extends Task<Boolean> {
 	
 	private static final String updateXml = "<mobile_device_application><general><itunes_sync_time>%d</itunes_sync_time></general></mobile_device_application>";
+        private static final Logger LOG = Logger.getLogger(EvenlySpreadSchedulerOption.class.getName());
 	
 	private final JssApi jssApi;
 	private final List<Integer> deviceIdList;
