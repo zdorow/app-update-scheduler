@@ -1,42 +1,51 @@
 package com.app.update.scheduler.option.impl;
 
+import java.util.List;
+
 import com.app.update.scheduler.jamfpro.api.JssApi;
 import com.app.update.scheduler.jamfpro.api.JssApiException;
-import java.util.List;
+import com.app.update.scheduler.option.TimeFrame;
 import java.util.logging.Logger;
+
 import javafx.concurrent.Task;
 import javafx.scene.text.Text;
 
-public class EvenlySpreadSchedulerOption extends Task<Boolean> {
+public class TimeFrameSchedulerOption extends Task<Boolean> {
 	
 	private static final String updateXml = "<mobile_device_application><general><itunes_sync_time>%d</itunes_sync_time></general></mobile_device_application>";
-        private static final Logger LOG = Logger.getLogger(EvenlySpreadSchedulerOption.class.getName());
-	
+        private static final Logger LOG = Logger.getLogger(TimeFrameSchedulerOption.class.getName());
+
 	private final JssApi jssApi;
 	private final List<Integer> deviceIdList;
 	private final Text actiontarget;
+	private final TimeFrame timeFrameStart;
+	private final TimeFrame timeFrameEnd;
 	
-	public EvenlySpreadSchedulerOption(JssApi jssApi, List<Integer> deviceIdList, Text actiontarget) {
+	public TimeFrameSchedulerOption(JssApi jssApi, List<Integer> deviceIdList, Text actiontarget, TimeFrame timeFrameStart, TimeFrame timeFrameEnd) {
 		this.jssApi = jssApi;
 		this.deviceIdList = deviceIdList;
 		this.actiontarget = actiontarget;
+		this.timeFrameStart = timeFrameStart;
+		this.timeFrameEnd = timeFrameEnd;
 	}
-
+	
 	@Override
 	protected Boolean call() throws Exception {
 		
 		actiontarget.setText("Calculating spread of application updates");
-		int count=0;
-		double startTime = 0;
-		double spread = 86400 / new Double(deviceIdList.size());
 		
 		try {
+                        int count=0;
+			double startTime = timeFrameStart.calculateNumberOfSecondsFromMidnight();
+			double endTime = timeFrameEnd.calculateNumberOfSecondsFromMidnight();
+			
+			double spread = endTime / new Double(deviceIdList.size());
+		
 			actiontarget.setText("Updating application update schedules");
 			
 			for (int id : deviceIdList) {
-                            
 				jssApi.put("mobiledeviceapplications/id/" + id, String.format(updateXml, Math.round(startTime)));
-
+				
 				updateProgress(count, deviceIdList.size());
                                 count++;
 				startTime += spread;
@@ -46,7 +55,7 @@ public class EvenlySpreadSchedulerOption extends Task<Boolean> {
 			actiontarget.setText("There was an error while processing app updates.");
 			return false;
 		}
-                
+		
 		return true;
 	}
 }
