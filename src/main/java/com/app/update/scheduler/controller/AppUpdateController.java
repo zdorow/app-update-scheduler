@@ -74,9 +74,15 @@ public class AppUpdateController implements Initializable {
 
 		try {
 
-			ApplicationListGet applicationList = new ApplicationListGet(jssApi, actiontarget);
-                        List<Integer> deviceIdList = applicationList.getDeviceIdList();
-			
+			Task<List<Integer>> applicationList = new ApplicationListGet(jssApi, actiontarget);
+                            progressBar.progressProperty().bind(applicationList.progressProperty());
+       
+                                Thread appThread = new Thread(applicationList);
+                                appThread.start();
+                                
+                        applicationList.setOnSucceeded(e -> {
+                        List<Integer> deviceIdList = applicationList.getValue();
+   	
 			switch (schedulerOption) {
 				case EvenlySpread:
                                     Task<Boolean> scheduler = new EvenlySpreadSchedulerOption(jssApi, deviceIdList, actiontarget);
@@ -85,8 +91,9 @@ public class AppUpdateController implements Initializable {
                                     
                                     Thread myThread = new Thread(scheduler);
                                     myThread.start();
-                                          scheduler.setOnSucceeded(e -> {                
-                                    actiontarget.setText("Done scheduling apps ");
+                                    
+                                    scheduler.setOnSucceeded(ex -> {                
+                                        actiontarget.setText("Done scheduling apps ");
                                     });
                                        
 
@@ -102,10 +109,10 @@ public class AppUpdateController implements Initializable {
                                         Thread myThread1 = new Thread(scheduler1);
                                         myThread1.start();
                                         
-                                              scheduler1.setOnSucceeded(e -> {                
+                                        scheduler1.setOnSucceeded(ex -> {                
                     actiontarget.setText("Done scheduling apps ");
             });
-      scheduler1.setOnFailed(e ->
+      scheduler1.setOnFailed(ex ->
       {                
                     Integer Response = jssApi.getLastResponseCode();
             switch (Response) {
@@ -125,6 +132,7 @@ public class AppUpdateController implements Initializable {
 				default:
 					break;
 			}
+                        		            });
 	} catch(Exception e){
             actiontarget.setText("Something really went wrong. Please file an issue on Github2");
                 }

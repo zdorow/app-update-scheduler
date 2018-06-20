@@ -13,7 +13,7 @@ import javafx.scene.text.Text;
 /*
 Programmer: Zachary Dorow
  */
-public class ApplicationListGet extends Task<Boolean> {
+public class ApplicationListGet extends Task <List<Integer>> {
     
     	public JssApi jssApi;
 	public Text actiontarget;
@@ -24,36 +24,63 @@ public class ApplicationListGet extends Task<Boolean> {
 		this.actiontarget = actiontarget;
                 
 	}
-    public List<Integer> getDeviceIdList() throws Exception {
-        	actiontarget.setText("Status: Gathering information on Mobile Device Applications");
+//    public List<Integer> getDeviceIdList() throws Exception {
+//        	actiontarget.setText("Status: Gathering information on Mobile Device Applications");
+//			
+//			String result = jssApi.get("mobiledeviceapplications");
+//			MobileDeviceApplications mobileDeviceApplications = JaxbObjectConverter.unmarshall(MobileDeviceApplications.class, result);
+//			int count = 0;
+//			List<Integer> deviceIdList = new ArrayList<>();
+//			
+//			for (MobileDeviceApplications.MobileDeviceApplicationShell appShell : mobileDeviceApplications.getMobileDeviceApplicationList()) {
+//				String applicationString = jssApi.get("mobiledeviceapplications/id/" + appShell.getId() + "/subset/General");
+//				MobileDeviceApplication application = JaxbObjectConverter.unmarshall(MobileDeviceApplication.class, applicationString);
+//                                updateProgress(count, deviceIdList.size());
+//                                count++;
+//				
+//				if (application.getGeneral() != null && application.getGeneral().isKeepDescriptionAndIconUpToDate()) {
+//					deviceIdList.add(application.getGeneral().getId());
+//				}
+//			}
+//			
+//			System.out.println("Checking size of device ID list");
+//			if (deviceIdList.isEmpty()) {
+//				actiontarget.setText("No applications were found with app updates set.");
+//                          return null;
+//        }
+//        return deviceIdList;
+//    }               
+
+    @Override
+    protected List<Integer> call() throws Exception {
+         	actiontarget.setText("Gathering information on Mobile Device Applications");
 			
 			String result = jssApi.get("mobiledeviceapplications");
 			MobileDeviceApplications mobileDeviceApplications = JaxbObjectConverter.unmarshall(MobileDeviceApplications.class, result);
 			int count = 0;
 			List<Integer> deviceIdList = new ArrayList<>();
+                        updateProgress(0, 1);
 			
 			for (MobileDeviceApplications.MobileDeviceApplicationShell appShell : mobileDeviceApplications.getMobileDeviceApplicationList()) {
 				String applicationString = jssApi.get("mobiledeviceapplications/id/" + appShell.getId() + "/subset/General");
 				MobileDeviceApplication application = JaxbObjectConverter.unmarshall(MobileDeviceApplication.class, applicationString);
-                                updateProgress(count, deviceIdList.size());
+                                
+                                updateProgress(count, mobileDeviceApplications.getMobileDeviceApplicationList().size());
+                                
                                 count++;
 				
 				if (application.getGeneral() != null && application.getGeneral().isKeepDescriptionAndIconUpToDate()) {
 					deviceIdList.add(application.getGeneral().getId());
 				}
 			}
-			
+			updateProgress(1, 1);
 			System.out.println("Checking size of device ID list");
 			if (deviceIdList.isEmpty()) {
 				actiontarget.setText("No applications were found with app updates set.");
                           return null;
         }
+                        
         return deviceIdList;
-    }               
-
-    @Override
-    protected Boolean call() throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
