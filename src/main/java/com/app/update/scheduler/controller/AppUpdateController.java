@@ -1,6 +1,6 @@
 package com.app.update.scheduler.controller;
 
-import com.app.update.scheduler.applicaitonlistget.ApplicationListGet;
+import com.app.update.scheduler.applicationlistget.ApplicationListGet;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 
 import com.app.update.scheduler.jamfpro.api.JssApi;
 import com.app.update.scheduler.jamfpro.api.JssApi.FORMAT;
+import com.app.update.scheduler.jamfpro.api.JssApiException;
 import com.app.update.scheduler.jamfpro.model.MobileDeviceApplication;
 import com.app.update.scheduler.jamfpro.model.MobileDeviceApplications;
 import com.app.update.scheduler.jamfpro.model.MobileDeviceApplications.MobileDeviceApplicationShell;
@@ -65,61 +66,64 @@ public class AppUpdateController implements Initializable {
 	private ProgressBar progressBar;
 	
 	@FXML
-	protected void handleSubmitButtonAction(ActionEvent event)  {
-		// Clear any existing text
-               actiontarget.setText("");
+	protected void handleSubmitButtonAction(ActionEvent event){
+            // Clear any existing text
+            actiontarget.setText("");
 
-		AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(appSchedulerOptions.getValue());
-		JssApi jssApi = new JssApi(jamfProServerUrl.getText(), userName.getText(), password.getText(), FORMAT.XML, FORMAT.XML);
+            AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(appSchedulerOptions.getValue());
+            JssApi jssApi = new JssApi(jamfProServerUrl.getText(), userName.getText(), password.getText(), FORMAT.XML, FORMAT.XML);
 
-		try {
-
-			Task<List<Integer>> applicationList = new ApplicationListGet(jssApi, actiontarget);
-                            progressBar.progressProperty().bind(applicationList.progressProperty());
+	try {
+            Task<List<Integer>> applicationList = new ApplicationListGet(jssApi, actiontarget);
+                progressBar.progressProperty().bind(applicationList.progressProperty());
        
-                                Thread appThread = new Thread(applicationList);
-                                appThread.start();
-                                
-                        applicationList.setOnSucceeded(e -> {
-                        List<Integer> deviceIdList = applicationList.getValue();
+                Thread appThread = new Thread(applicationList);
+                appThread.start();
+                
+            //Setting the device list up if all went well getting the data                   
+            applicationList.setOnSucceeded(e -> {
+                List<Integer> appIdList = applicationList.getValue();
    	
-			switch (schedulerOption) {
-				case EvenlySpread:
-                                    Task<Boolean> scheduler = new EvenlySpreadSchedulerOption(jssApi, deviceIdList, actiontarget);
-                                    
-                                    progressBar.progressProperty().bind(scheduler.progressProperty());
-                                    
-                                    Thread myThread = new Thread(scheduler);
-                                    myThread.start();
-                                    
-                                    scheduler.setOnSucceeded(ex -> {                
-                                        actiontarget.setText("Done scheduling apps ");
-                                    });
-                                       
-
-					break;
-				case TimeInterval:
-					TimeFrame timeFrameStart = TimeFrame.fromDisplayText(timeFrameStartOptions.getValue());
-					TimeFrame timeFrameEnd = TimeFrame.fromDisplayText(timeFrameEndOptions.getValue());
+                    switch (schedulerOption) {
+			case TimeInterval:
+                            TimeFrame timeFrameStart = TimeFrame.fromDisplayText(timeFrameStartOptions.getValue());
+                            TimeFrame timeFrameEnd = TimeFrame.fromDisplayText(timeFrameEndOptions.getValue());
 					
-                                        Task<Boolean> scheduler1 = new TimeFrameSchedulerOption(jssApi, deviceIdList, actiontarget, timeFrameStart, timeFrameEnd);
+                            Task<Boolean> timeFrameScheduler = new TimeFrameSchedulerOption(jssApi, appIdList, actiontarget, timeFrameStart, timeFrameEnd);
                                         
-                                        progressBar.progressProperty().bind(scheduler1.progressProperty());
+                            progressBar.progressProperty().bind(timeFrameScheduler.progressProperty());
                                         
-                                        Thread myThread1 = new Thread(scheduler1);
-                                        myThread1.start();
+                            Thread myThread1 = new Thread(timeFrameScheduler);
+                            myThread1.start();
                                         
-                                        scheduler1.setOnSucceeded(ex -> {                
+                timeFrameScheduler.setOnSucceeded(ex -> {                
                     actiontarget.setText("Done scheduling apps ");
-            });
-      scheduler1.setOnFailed(ex ->
+            });                                        
+			break;
+			default:
+                            Task<Boolean> evenScheduler = new EvenlySpreadSchedulerOption(jssApi, appIdList, actiontarget);
+                                    
+                            progressBar.progressProperty().bind(evenScheduler.progressProperty());
+                                    
+                            Thread myThread = new Thread(evenScheduler);
+                            myThread.start();
+                                    
+                            evenScheduler.setOnSucceeded(ex -> {                
+                    actiontarget.setText("Done scheduling apps ");
+                    });                        
+			break;
+
+			}
+                        		            });
+    applicationList.setOnFailed(e ->
       {                
-                    Integer Response = jssApi.getLastResponseCode();
+            Integer Response = JssApiException.getHttpResponseCode();
+            System.out.println("Current Response:" + Response);
             switch (Response) {
-                case 401:
+                case 0:
                     actiontarget.setText("Username and/or password not accepted.");
                     break;
-                case 0:
+                case -1:
                     actiontarget.setText("URL was not found.");
                     break;
                 default:
@@ -127,12 +131,6 @@ public class AppUpdateController implements Initializable {
                     break;
             }
                             });
-                                        
-					break;
-				default:
-					break;
-			}
-                        		            });
 	} catch(Exception e){
             actiontarget.setText("Something really went wrong. Please file an issue on Github2");
                 }
