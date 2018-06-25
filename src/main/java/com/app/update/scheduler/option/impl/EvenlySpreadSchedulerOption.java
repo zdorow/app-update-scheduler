@@ -13,12 +13,12 @@ public class EvenlySpreadSchedulerOption extends Task<Boolean> {
         private static final Logger LOG = Logger.getLogger(EvenlySpreadSchedulerOption.class.getName());
 	
 	private final JssApi jssApi;
-	private final List<Integer> deviceIdList;
+	private final List<Integer> appIdList;
 	private final Text actiontarget;
 	
 	public EvenlySpreadSchedulerOption(JssApi jssApi, List<Integer> deviceIdList, Text actiontarget) {
 		this.jssApi = jssApi;
-		this.deviceIdList = deviceIdList;
+		this.appIdList = deviceIdList;
 		this.actiontarget = actiontarget;
 	}
 
@@ -28,16 +28,16 @@ public class EvenlySpreadSchedulerOption extends Task<Boolean> {
 		actiontarget.setText("Calculating spread of application updates");
 		int count=0;
 		double startTime = 0;
-		double spread = 86400 / new Double(deviceIdList.size());
+		double spread = 86400 / new Double(appIdList.size());
 		
 		try {
 			actiontarget.setText("Updating application update schedules");
 			
-			for (int id : deviceIdList) {
+			for (int id : appIdList) {
                             
 				jssApi.put("mobiledeviceapplications/id/" + id, String.format(updateXml, Math.round(startTime)));
 
-				updateProgress(count, deviceIdList.size());
+				updateProgress(count, appIdList.size());
                                 count++;
 				startTime += spread;
 			}

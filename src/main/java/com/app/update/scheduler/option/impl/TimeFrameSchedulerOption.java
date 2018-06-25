@@ -16,14 +16,14 @@ public class TimeFrameSchedulerOption extends Task<Boolean> {
         private static final Logger LOG = Logger.getLogger(TimeFrameSchedulerOption.class.getName());
 
 	private final JssApi jssApi;
-	private final List<Integer> deviceIdList;
+	private final List<Integer> appIdList;
 	private final Text actiontarget;
 	private final TimeFrame timeFrameStart;
 	private final TimeFrame timeFrameEnd;
 	
-	public TimeFrameSchedulerOption(JssApi jssApi, List<Integer> deviceIdList, Text actiontarget, TimeFrame timeFrameStart, TimeFrame timeFrameEnd) {
+	public TimeFrameSchedulerOption(JssApi jssApi, List<Integer> appIdList, Text actiontarget, TimeFrame timeFrameStart, TimeFrame timeFrameEnd) {
 		this.jssApi = jssApi;
-		this.deviceIdList = deviceIdList;
+		this.appIdList = appIdList;
 		this.actiontarget = actiontarget;
 		this.timeFrameStart = timeFrameStart;
 		this.timeFrameEnd = timeFrameEnd;
@@ -39,14 +39,14 @@ public class TimeFrameSchedulerOption extends Task<Boolean> {
 			double startTime = timeFrameStart.calculateNumberOfSecondsFromMidnight();
 			double endTime = timeFrameEnd.calculateNumberOfSecondsFromMidnight();
 			
-			double spread = endTime / new Double(deviceIdList.size());
+			double spread = endTime / new Double(appIdList.size());
 		
 			actiontarget.setText("Updating application update schedules");
 			
-			for (int id : deviceIdList) {
+			for (int id : appIdList) {
 				jssApi.put("mobiledeviceapplications/id/" + id, String.format(updateXml, Math.round(startTime)));
 				
-				updateProgress(count, deviceIdList.size());
+				updateProgress(count, appIdList.size());
                                 count++;
 				startTime += spread;
 			}
