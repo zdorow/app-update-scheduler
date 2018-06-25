@@ -1,24 +1,25 @@
 package com.app.update.scheduler.eventhandler;
 
+import com.app.update.scheduler.jamfpro.api.JssApi;
+
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.scene.text.Text;
 
 public class JssApiResponseHandler implements EventHandler<WorkerStateEvent> {
 
-	private Object jssApi;
+	private JssApi jssApi;
 	private Text actiontarget;
 
 	
-	public JssApiResponseHandler(Object jssApi, Text actiontarget) {
+	public JssApiResponseHandler(JssApi jssApi, Text actiontarget) {
 		this.jssApi = jssApi;
 		this.actiontarget = actiontarget;
 	}
 	
 	@Override
 	public void handle(WorkerStateEvent event) {
-            //Integer responseCode = 
-		switch (0) {
+		switch (jssApi.getLastResponseCode()) {
 		case 401:
 			actiontarget.setText("Username and/or password not accepted.");
 			break;
@@ -26,7 +27,7 @@ public class JssApiResponseHandler implements EventHandler<WorkerStateEvent> {
 			actiontarget.setText("URL was not found.");
 			break;
 		default:
-			actiontarget.setText("Something really went wrong. Please file an issue on Github1");
+			actiontarget.setText("Something really went wrong. Please file an issue on Github");
 			break;
 		}
 	}

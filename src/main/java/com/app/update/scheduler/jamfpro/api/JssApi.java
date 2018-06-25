@@ -106,10 +106,9 @@ public class JssApi {
 	protected String parseResponse(HttpsURLConnection conn) throws JssApiException {
 			
 		try {
-			
-			InputStream is = conn.getInputStream();
-			
 			this.lastResponseCode = conn.getResponseCode();
+                        
+			InputStream is = conn.getInputStream();
 			
 			byte[] buf = readInfoFromStream(is);
 	      

@@ -84,7 +84,7 @@ public class AppUpdateController implements Initializable {
 			appListService.start();
 			
 		} catch(Exception e){
-			actiontarget.setText("Something really went wrong. Please file an issue on Github2");
+			actiontarget.setText("Something really went wrong. Please file an issue on Github");
 		}
 	}
 	
