@@ -103,7 +103,7 @@ public class JssApi {
 		
 	}
 	
-	private String parseResponse(HttpsURLConnection conn) throws JssApiException {
+	protected String parseResponse(HttpsURLConnection conn) throws JssApiException {
 			
 		try {
 			

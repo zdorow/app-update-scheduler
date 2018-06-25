@@ -6,17 +6,19 @@ import javafx.scene.text.Text;
 
 public class JssApiResponseHandler implements EventHandler<WorkerStateEvent> {
 
-	private Integer responseCode;
+	private Object jssApi;
 	private Text actiontarget;
+
 	
-	public JssApiResponseHandler(Integer responseCode, Text actiontarget) {
-		this.responseCode = responseCode;
+	public JssApiResponseHandler(Object jssApi, Text actiontarget) {
+		this.jssApi = jssApi;
 		this.actiontarget = actiontarget;
 	}
 	
 	@Override
 	public void handle(WorkerStateEvent event) {
-		switch (responseCode) {
+            //Integer responseCode = 
+		switch (0) {
 		case 401:
 			actiontarget.setText("Username and/or password not accepted.");
 			break;
