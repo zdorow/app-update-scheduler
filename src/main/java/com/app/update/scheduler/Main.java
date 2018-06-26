@@ -13,11 +13,12 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    @Override
+
+	@Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/view/app_update_schedule.fxml"));
         
-        Scene scene = new Scene(root, 550, 325);
+        Scene scene = new Scene(root, 500, 305);
         
         primaryStage.setTitle("App Update Scheduler");
         primaryStage.setScene(scene);
