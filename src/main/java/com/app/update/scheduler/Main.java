@@ -18,7 +18,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/view/app_update_schedule.fxml"));
         
-        Scene scene = new Scene(root, 450, 300);
+        Scene scene = new Scene(root, 475, 325);
         
         primaryStage.setTitle("App Update Scheduler");
         primaryStage.setScene(scene);
