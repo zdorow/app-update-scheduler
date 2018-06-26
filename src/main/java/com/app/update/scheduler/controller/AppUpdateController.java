@@ -80,11 +80,11 @@ public class AppUpdateController implements Initializable {
 				System.out.println("TimeFrameSchedulerService has been created and started.");
 			});
 			
-			appListService.setOnFailed(new JssApiResponseHandler(jssApi.getLastResponseCode(), actiontarget));
+			appListService.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget));
 			appListService.start();
 			
 		} catch(Exception e){
-			actiontarget.setText("Something really went wrong. Please file an issue on Github2");
+			actiontarget.setText("Something really went wrong. Please file an issue on Github");
 		}
 	}
 	

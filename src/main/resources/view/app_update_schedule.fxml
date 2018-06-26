@@ -8,8 +8,9 @@
 <?import javafx.scene.text.*?>
 <?import javafx.collections.*?>
 
-<GridPane fx:controller="com.app.update.scheduler.controller.AppUpdateController" xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10" styleClass="root">
-	<padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
+<VBox fx:controller="com.app.update.scheduler.controller.AppUpdateController" xmlns:fx="http://javafx.com/fxml" alignment="center" styleClass="root">
+    <GridPane hgap="10" vgap="10" alignment="top_center">
+	<padding><Insets top="0" right="25" bottom="10" left="25"/></padding>
 
     <Label text="Jamf Pro Server URL:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
     <TextField fx:id="jamfProServerUrl" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
@@ -41,13 +42,10 @@
 	    	</items>
 	    </ComboBox>
     </HBox>
-    
-    <HBox spacing="0" alignment="bottom_left" GridPane.columnIndex="1" GridPane.rowIndex="6">
-        <Button text="Update Apps" onAction="#handleSubmitButtonAction"/>
-	</HBox>
-    <HBox spacing="0" alignment="bottom_left" GridPane.columnIndex="1" GridPane.rowIndex="7" >
-        <ProgressBar fx:id="progressBar" layoutX="54.0" layoutY="103.0" prefHeight="36.0" prefWidth="200.0" progress="0.0" GridPane.columnIndex="1" GridPane.rowIndex="8" visible="true" />
-	</HBox>
-	<Text fx:id="actiontarget" GridPane.columnIndex="1" GridPane.rowIndex="8" text=""/>
-
 </GridPane>
+    <VBox spacing="10" alignment="bottom_center">
+        <Button text="Update Apps" onAction="#handleSubmitButtonAction"/>
+        <ProgressBar fx:id="progressBar" layoutX="54.0" layoutY="103.0" prefHeight="36.0" prefWidth="200.0" progress="0.0" GridPane.columnIndex="1" GridPane.rowIndex="8" visible="true" />
+	<Text fx:id="actiontarget" text="Welcome to the App Scheduler!"/>
+        </VBox>
+</VBox>
