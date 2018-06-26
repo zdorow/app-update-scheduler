@@ -29,7 +29,7 @@
 	    </ComboBox>
 	    
 	    <Label fx:id="timeFrameLabel" text="Scheduling Timeframe:" GridPane.columnIndex="0" GridPane.rowIndex="5" disable="false"/>
-	    <HBox fx:id="timeFrameOptions" GridPane.columnIndex="1" GridPane.rowIndex="5" disable="false">
+	    <HBox fx:id="timeFrameOptions" GridPane.columnIndex="1" GridPane.rowIndex="5" alignment="CENTER" disable="false">
 	    	<ComboBox fx:id="timeFrameStartOptions" promptText="Choose One">
 		    	<items>
 		    		<FXCollections fx:factory="observableArrayList"></FXCollections>
