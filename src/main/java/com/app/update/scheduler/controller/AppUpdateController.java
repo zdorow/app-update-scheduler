@@ -93,6 +93,10 @@ public class AppUpdateController implements Initializable {
 
 		for (AppUpdateSchedulerOption schedulerOption : AppUpdateSchedulerOption.values()) {
 			appSchedulerOptions.getItems().add(schedulerOption.getDisplayText());
+			
+			if (schedulerOption.isDefaultSelectedValue()) {
+				appSchedulerOptions.getSelectionModel().select(schedulerOption.getDisplayText());
+			}
 		}
 
 		for (TimeFrame timeFrameOption : TimeFrame.values()) {
