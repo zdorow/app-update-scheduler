@@ -13,3 +13,4 @@ target/**
 tomcat*/**
 catalina.out*
 /nbactions.xml
+bin/**

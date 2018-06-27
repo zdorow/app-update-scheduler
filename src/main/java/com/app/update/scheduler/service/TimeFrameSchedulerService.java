@@ -16,34 +16,35 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.text.Text;
 
 public class TimeFrameSchedulerService extends Service<Boolean> {
-	
+
 	private Task<Boolean> scheduler;
-	
+
 	public TimeFrameSchedulerService(JssApi jssApi, List<Integer> appIdList, Text actiontarget, ComboBox<String> timeFrameStartOptions, ComboBox<String> timeFrameEndOptions, 
 			AppUpdateSchedulerOption schedulerOption, ProgressBar progressBar) {
-		
+
 		switch (schedulerOption) {
 		case EvenlySpread:
 			scheduler = new EvenlySpreadSchedulerOption(jssApi, appIdList, actiontarget);
 			break;
 		case TimeInterval:
-			TimeFrame timeFrameStart = TimeFrame.fromDisplayText(timeFrameStartOptions.getValue());
-			TimeFrame timeFrameEnd = TimeFrame.fromDisplayText(timeFrameEndOptions.getValue());
-
+			TimeFrame timeFrameStart = TimeFrame.fromDisplayText(timeFrameStartOptions.getValue(), actiontarget);
+			TimeFrame timeFrameEnd = TimeFrame.fromDisplayText(timeFrameEndOptions.getValue(), actiontarget);
 			scheduler = new TimeFrameSchedulerOption(jssApi, appIdList, actiontarget, timeFrameStart, timeFrameEnd);
+
 			break;
 		default:
+			actiontarget.setText("Please make a selection ");
 			break;
 		}
-		
+
 		progressBar.progressProperty().bind(scheduler.progressProperty());
-		
+
 		scheduler.setOnSucceeded(ex -> {
 			System.out.println("App Scheduling has completed.");
-			
+
 			actiontarget.setText("Done scheduling apps ");
 		});
-		
+
 		scheduler.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget));
 	}
 

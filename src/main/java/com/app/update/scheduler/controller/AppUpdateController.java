@@ -12,11 +12,11 @@ import com.app.update.scheduler.option.TimeFrame;
 import com.app.update.scheduler.service.ApplicationListService;
 import com.app.update.scheduler.service.TimeFrameSchedulerService;
 
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -56,43 +56,62 @@ public class AppUpdateController implements Initializable {
 	private Text actiontarget;
 
 	@FXML
+	private Button button;
+
+	@FXML
 	private ProgressBar progressBar;
 
 	@FXML
 	protected void handleSubmitButtonAction(ActionEvent event) {
 		// Clear any existing text
 		actiontarget.setText("");
+		button.setDisable(true);
+		progressBar.setVisible(true);
 
 		AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(appSchedulerOptions.getValue());
 		JssApi jssApi = new JssApi(jamfProServerUrl.getText(), userName.getText(), password.getText(), FORMAT.XML, FORMAT.XML);
 
 		try {
-
 			ApplicationListService appListService = new ApplicationListService(jssApi, actiontarget, progressBar);
-			
+
 			appListService.setOnSucceeded(e -> {
 				System.out.println("ApplicationListService has succeeded.");
-				
+
 				List<Integer> appIdList = appListService.getValue();
-				
-				new TimeFrameSchedulerService(jssApi, appIdList, actiontarget, timeFrameStartOptions, timeFrameEndOptions, schedulerOption, progressBar).start();
-				
-				System.out.println("TimeFrameSchedulerService has been created and started.");
+				System.out.println(appIdList);
+				TimeFrameSchedulerService timeFrameService = new TimeFrameSchedulerService(jssApi, appIdList, actiontarget, timeFrameStartOptions, timeFrameEndOptions, schedulerOption, progressBar);
+				timeFrameService.setOnSucceeded(ex -> {
+					System.out.println("TimeFrameSchedulerService has succeeded.");
+					button.setDisable(false);
+				});
+				timeFrameService.setOnFailed(ex -> {
+					System.out.println("TimeFrameSchedulerService has been stopped for no time frame set.");
+					button.setDisable(false);
+				});
+				timeFrameService.start();
+
 			});
-			
+
 			appListService.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget));
+			appListService.setOnFailed(ex -> {
+				button.setDisable(false);
+			});
 			appListService.start();
-			
+
 		} catch(Exception e){
-			actiontarget.setText("Something really went wrong. Please file an issue on Github");
+			actiontarget.setText("Something really went wrong. Please file an issue on Github.");
 		}
 	}
-	
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
 		for (AppUpdateSchedulerOption schedulerOption : AppUpdateSchedulerOption.values()) {
 			appSchedulerOptions.getItems().add(schedulerOption.getDisplayText());
+
+			if (schedulerOption.isDefaultSelectedValue()) {
+				appSchedulerOptions.getSelectionModel().select(schedulerOption.getDisplayText());
+			}
 		}
 
 		for (TimeFrame timeFrameOption : TimeFrame.values()) {
@@ -103,20 +122,19 @@ public class AppUpdateController implements Initializable {
 			timeFrameEndOptions.getItems().add(timeFrameOption.getDisplayText());
 		}
 
-		appSchedulerOptions.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				try {
-					AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(observable.getValue());
+		appSchedulerOptions.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+			try {
+				AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(observable.getValue());
 
-					if (schedulerOption == AppUpdateSchedulerOption.TimeInterval) {
-						timeFrameLabel.setDisable(false);
-						timeFrameOptions.setDisable(false);
-					} else {
-						timeFrameLabel.setDisable(true);
-						timeFrameOptions.setDisable(true);
-					}
-				} catch (Exception e) {  }
+				if (schedulerOption == AppUpdateSchedulerOption.TimeInterval) {
+					timeFrameLabel.setDisable(false);
+					timeFrameOptions.setDisable(false);
+				} else {
+					timeFrameLabel.setDisable(true);
+					timeFrameOptions.setDisable(true);
+				}
+			} catch (Exception e) {
+				actiontarget.setText("Something really went wrong. Please file an issue on Github.");
 			}
 		});
 	}
