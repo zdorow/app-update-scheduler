@@ -1,12 +1,10 @@
 package com.app.update.scheduler.option.impl;
 
-import java.util.List;
-
 import com.app.update.scheduler.jamfpro.api.JssApi;
 import com.app.update.scheduler.jamfpro.api.JssApiException;
 import com.app.update.scheduler.option.TimeFrame;
+import java.util.List;
 import java.util.logging.Logger;
-
 import javafx.concurrent.Task;
 import javafx.scene.text.Text;
 

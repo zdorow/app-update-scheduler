@@ -1,14 +1,13 @@
 package com.app.update.scheduler.service;
 
-import java.util.List;
-
 import com.app.update.scheduler.eventhandler.JssApiResponseHandler;
 import com.app.update.scheduler.jamfpro.api.JssApi;
 import com.app.update.scheduler.option.AppUpdateSchedulerOption;
 import com.app.update.scheduler.option.TimeFrame;
 import com.app.update.scheduler.option.impl.EvenlySpreadSchedulerOption;
 import com.app.update.scheduler.option.impl.TimeFrameSchedulerOption;
-
+import java.util.List;
+import java.util.logging.Logger;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.scene.control.ComboBox;
@@ -16,6 +15,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.text.Text;
 
 public class TimeFrameSchedulerService extends Service<Boolean> {
+    private static final Logger LOG = Logger.getLogger(TimeFrameSchedulerService.class.getName());
 	
 	private Task<Boolean> scheduler;
 	
@@ -27,12 +27,13 @@ public class TimeFrameSchedulerService extends Service<Boolean> {
 			scheduler = new EvenlySpreadSchedulerOption(jssApi, appIdList, actiontarget);
 			break;
 		case TimeInterval:
-			TimeFrame timeFrameStart = TimeFrame.fromDisplayText(timeFrameStartOptions.getValue());
-			TimeFrame timeFrameEnd = TimeFrame.fromDisplayText(timeFrameEndOptions.getValue());
-
-			scheduler = new TimeFrameSchedulerOption(jssApi, appIdList, actiontarget, timeFrameStart, timeFrameEnd);
+                    TimeFrame timeFrameStart = TimeFrame.fromDisplayText(timeFrameStartOptions.getValue(), actiontarget);
+                    TimeFrame timeFrameEnd = TimeFrame.fromDisplayText(timeFrameEndOptions.getValue(), actiontarget);
+                    scheduler = new TimeFrameSchedulerOption(jssApi, appIdList, actiontarget, timeFrameStart, timeFrameEnd);
+		
 			break;
 		default:
+                        actiontarget.setText("Please make a selection ");
 			break;
 		}
 		

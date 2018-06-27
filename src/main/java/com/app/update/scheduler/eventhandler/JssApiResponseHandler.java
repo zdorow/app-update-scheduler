@@ -26,8 +26,11 @@ public class JssApiResponseHandler implements EventHandler<WorkerStateEvent> {
 		case 0:
 			actiontarget.setText("URL was not found.");
 			break;
-		default:
-			actiontarget.setText("Something really went wrong. Please file an issue on Github");
+                case 200: 
+                        actiontarget.setText("Please select a timeframe.");
+                        break;
+		default:                       
+			actiontarget.setText("Something really went wrong. Please file an issue on Github.");
 			break;
 		}
 	}

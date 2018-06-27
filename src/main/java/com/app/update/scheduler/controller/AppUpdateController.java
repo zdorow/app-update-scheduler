@@ -66,7 +66,8 @@ public class AppUpdateController implements Initializable {
 		progressBar.setVisible(true);
 
 		AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(appSchedulerOptions.getValue());
-		JssApi jssApi = new JssApi(jamfProServerUrl.getText(), userName.getText(), password.getText(), FORMAT.XML, FORMAT.XML);
+		//JssApi jssApi = new JssApi(jamfProServerUrl.getText(), userName.getText(), password.getText(), FORMAT.XML, FORMAT.XML);
+JssApi jssApi = new JssApi("https://zdorow.jamfcloud.com", "Eauk", "jamf1234", FORMAT.XML, FORMAT.XML);
 
 		try {
 
@@ -76,17 +77,23 @@ public class AppUpdateController implements Initializable {
 				System.out.println("ApplicationListService has succeeded.");
 				
 				List<Integer> appIdList = appListService.getValue();
+				System.out.println(appIdList);
+				TimeFrameSchedulerService timeFrameService = new TimeFrameSchedulerService(jssApi, appIdList, actiontarget, timeFrameStartOptions, timeFrameEndOptions, schedulerOption, progressBar);
+                                timeFrameService.setOnSucceeded(ex -> {
+                                    System.out.println("TimeFrameSchedulerService has succeeded.");
+                                });
+                                timeFrameService.setOnFailed(ex -> {
+                                    System.out.println("TimeFrameSchedulerService has been stopped for no time frame set.");
+                                });
+				timeFrameService.start();
 				
-				new TimeFrameSchedulerService(jssApi, appIdList, actiontarget, timeFrameStartOptions, timeFrameEndOptions, schedulerOption, progressBar).start();
-				
-				System.out.println("TimeFrameSchedulerService has been created and started.");
 			});
 			
 			appListService.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget));
 			appListService.start();
 			
 		} catch(Exception e){
-			actiontarget.setText("Something really went wrong. Please file an issue on Github");
+                        actiontarget.setText("Something really went wrong. Please file an issue on Github.");
 		}
 	}
 	
@@ -102,28 +109,27 @@ public class AppUpdateController implements Initializable {
 		}
 
 		for (TimeFrame timeFrameOption : TimeFrame.values()) {
-			timeFrameStartOptions.getItems().add(timeFrameOption.getDisplayText());
+                        timeFrameStartOptions.getItems().add(timeFrameOption.getDisplayText());
 		}
 
 		for (TimeFrame timeFrameOption : TimeFrame.values()) {
 			timeFrameEndOptions.getItems().add(timeFrameOption.getDisplayText());
 		}
 
-		appSchedulerOptions.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				try {
-					AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(observable.getValue());
-
-					if (schedulerOption == AppUpdateSchedulerOption.TimeInterval) {
-						timeFrameLabel.setDisable(false);
-						timeFrameOptions.setDisable(false);
-					} else {
-						timeFrameLabel.setDisable(true);
-						timeFrameOptions.setDisable(true);
-					}
-				} catch (Exception e) {  }
-			}
-		});
+		appSchedulerOptions.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+                    try {
+                        AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(observable.getValue());
+                        
+                        if (schedulerOption == AppUpdateSchedulerOption.TimeInterval) {
+                            timeFrameLabel.setDisable(false);
+                            timeFrameOptions.setDisable(false);
+                        } else {
+                            timeFrameLabel.setDisable(true);
+                            timeFrameOptions.setDisable(true);
+                        }
+                    } catch (Exception e) {
+                        actiontarget.setText("Something really went wrong. Please file an issue on Github.");
+                    }
+                });
 	}
 }
