@@ -17,6 +17,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -54,6 +55,9 @@ public class AppUpdateController implements Initializable {
 
 	@FXML
 	private Text actiontarget;
+	
+	@FXML
+	private Button button;
 
 	@FXML
 	private ProgressBar progressBar;
@@ -62,7 +66,7 @@ public class AppUpdateController implements Initializable {
 	protected void handleSubmitButtonAction(ActionEvent event) {
 		// Clear any existing text
 		actiontarget.setText("");
-		
+		button.setDisable(true);
 		progressBar.setVisible(true);
 
 		AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(appSchedulerOptions.getValue());
@@ -80,15 +84,20 @@ public class AppUpdateController implements Initializable {
 				TimeFrameSchedulerService timeFrameService = new TimeFrameSchedulerService(jssApi, appIdList, actiontarget, timeFrameStartOptions, timeFrameEndOptions, schedulerOption, progressBar);
                                 timeFrameService.setOnSucceeded(ex -> {
                                     System.out.println("TimeFrameSchedulerService has succeeded.");
+                                    button.setDisable(false);
                                 });
                                 timeFrameService.setOnFailed(ex -> {
                                     System.out.println("TimeFrameSchedulerService has been stopped for no time frame set.");
+                                    button.setDisable(false);
                                 });
 				timeFrameService.start();
 				
 			});
 			
 			appListService.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget));
+			appListService.setOnFailed(ex -> {
+				button.setDisable(false);
+				});
 			appListService.start();
 			
 		} catch(Exception e){

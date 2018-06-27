@@ -44,7 +44,7 @@
 	    </HBox>
 	</GridPane>
     <VBox spacing="10" alignment="bottom_center">
-        <Button text="Update Apps" onAction="#handleSubmitButtonAction"/>
+        <Button fx:id="button" text="Update Apps" disable="false" onAction="#handleSubmitButtonAction"/>
         <ProgressBar fx:id="progressBar" layoutX="54.0" layoutY="103.0" prefHeight="36.0" prefWidth="200.0" progress="0.0" GridPane.columnIndex="1" GridPane.rowIndex="8" visible="false" />
 		<Text fx:id="actiontarget" text="Welcome to the App Scheduler!"/>
 	</VBox>
