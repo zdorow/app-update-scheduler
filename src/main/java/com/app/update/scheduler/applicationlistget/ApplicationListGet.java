@@ -23,7 +23,6 @@ public class ApplicationListGet extends Task<List<Integer>> {
 	public ApplicationListGet(JssApi jssApi, Text actiontarget, ProgressBar progressBar) {
 		this.jssApi = jssApi;
 		this.actiontarget = actiontarget;
-		progressBar.progressProperty().bind(this.progressProperty());
 	}
 	
 	@Override
