@@ -35,7 +35,6 @@ public class ApplicationListService extends Service<List<Integer>> {
 			
 			new TimeFrameSchedulerService(jssApi, appIdList, actiontarget, timeFrameStartOptions, timeFrameEndOptions,
 										schedulerOption, progressBar, button).start();
-			appIdList.removeAll(appIdList);
 			button.setDisable(false);
 		});
 		
