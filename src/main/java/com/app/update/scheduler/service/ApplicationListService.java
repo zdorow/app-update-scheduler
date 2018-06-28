@@ -17,7 +17,7 @@ public class ApplicationListService extends Service<List<Integer>> {
 	private final ApplicationListGet applicationListGet;
 	
 	public ApplicationListService(JssApi jssApi, Text actiontarget, ProgressBar progressBar) {
-		this.applicationListGet = new ApplicationListGet(jssApi, actiontarget);
+		this.applicationListGet = new ApplicationListGet(jssApi, actiontarget, progressBar);
 		
 		progressBar.progressProperty().bind(applicationListGet.progressProperty());
 		

@@ -7,6 +7,7 @@ import com.app.update.scheduler.jaxb.JaxbObjectConverter;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.concurrent.Task;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.text.Text;
 
 
@@ -19,10 +20,10 @@ public class ApplicationListGet extends Task<List<Integer>> {
 	public Text actiontarget;
 
 
-	public ApplicationListGet(JssApi jssApi, Text actiontarget) {
+	public ApplicationListGet(JssApi jssApi, Text actiontarget, ProgressBar progressBar) {
 		this.jssApi = jssApi;
 		this.actiontarget = actiontarget;
-
+		progressBar.progressProperty().bind(this.progressProperty());
 	}
 	
 	@Override

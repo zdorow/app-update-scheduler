@@ -13,6 +13,7 @@ import javafx.concurrent.Task;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.text.Text;
+import javafx.scene.control.Button;
 
 public class TimeFrameSchedulerService extends Service<Boolean> {
     private static final Logger LOG = Logger.getLogger(TimeFrameSchedulerService.class.getName());
@@ -20,7 +21,7 @@ public class TimeFrameSchedulerService extends Service<Boolean> {
 	private Task<Boolean> scheduler;
 	
 	public TimeFrameSchedulerService(JssApi jssApi, List<Integer> appIdList, Text actiontarget, ComboBox<String> timeFrameStartOptions, ComboBox<String> timeFrameEndOptions, 
-			AppUpdateSchedulerOption schedulerOption, ProgressBar progressBar) {
+			AppUpdateSchedulerOption schedulerOption, ProgressBar progressBar, Button button) {
 		
 		switch (schedulerOption) {
 		case EvenlySpread:
@@ -32,7 +33,7 @@ public class TimeFrameSchedulerService extends Service<Boolean> {
             scheduler = new TimeFrameSchedulerOption(jssApi, appIdList, actiontarget, timeFrameStart, timeFrameEnd);
 			break;
 		default:
-            actiontarget.setText("Please make a selection ");
+            actiontarget.setText("Please make a selection.");
 			break;
 		}
 		
@@ -40,11 +41,11 @@ public class TimeFrameSchedulerService extends Service<Boolean> {
 		
 		scheduler.setOnSucceeded(ex -> {
 			System.out.println("App Scheduling has completed.");
-			
-			actiontarget.setText("Done scheduling apps ");
+			System.out.println("TimeFrameSchedulerService has succeeded.");
+			button.setDisable(false);
+			actiontarget.setText("Done scheduling apps.");
 		});
-		
-		scheduler.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget));
+		scheduler.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget, button));
 	}
 
 	@Override

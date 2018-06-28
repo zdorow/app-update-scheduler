@@ -13,11 +13,6 @@ public class JssApiResponseHandler implements EventHandler<WorkerStateEvent> {
 	private Text actiontarget;
 	private Button button;
 	
-	public JssApiResponseHandler(JssApi jssApi, Text actiontarget) {
-		this.jssApi = jssApi;
-		this.actiontarget = actiontarget;
-	}
-	
 	public JssApiResponseHandler(JssApi jssApi, Text actiontarget, Button button) {
 		this.jssApi = jssApi;
 		this.actiontarget = actiontarget;
@@ -36,7 +31,7 @@ public class JssApiResponseHandler implements EventHandler<WorkerStateEvent> {
 			button.setDisable(false);
 			break;
          case 200: 
-            actiontarget.setText("Please select a timeframe.");
+            actiontarget.setText("Timeframe not selected or app updates are not enabled.");
             button.setDisable(false);
             break;
 		default:                       

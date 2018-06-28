@@ -24,7 +24,7 @@ public class EvenlySpreadSchedulerOption extends Task<Boolean> {
 
 	@Override
 	protected Boolean call() throws Exception {
-		
+
 		actiontarget.setText("Calculating spread of application updates");
 		int count=0;
 		double startTime = 0;
@@ -38,10 +38,10 @@ public class EvenlySpreadSchedulerOption extends Task<Boolean> {
 				jssApi.put("mobiledeviceapplications/id/" + id, String.format(updateXml, Math.round(startTime)));
 
 				updateProgress(count, appIdList.size());
-                                count++;
+                count++;
 				startTime += spread;
 			}
-                        updateProgress(1, 1);
+                updateProgress(1, 1);
 		} catch (JssApiException e) {
 			actiontarget.setText("There was an error while processing app updates.");
 			return false;
