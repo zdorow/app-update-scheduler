@@ -73,7 +73,7 @@ public class AppUpdateController implements Initializable {
 
 		try {
 			ApplicationListService appListService = new ApplicationListService(jssApi, actiontarget, progressBar);
-
+			System.out.println("ApplicationListService has STARTED.");
 			appListService.setOnSucceeded(e -> {
 				System.out.println("ApplicationListService has succeeded.");
 
@@ -92,10 +92,7 @@ public class AppUpdateController implements Initializable {
 
 			});
 
-			appListService.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget));
-			appListService.setOnFailed(ex -> {
-				button.setDisable(false);
-			});
+			appListService.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget, button));
 			appListService.start();
 
 		} catch(Exception e){
