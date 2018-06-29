@@ -49,6 +49,7 @@ public class TimeFrameSchedulerOption extends Task<Boolean> {
 				startTime += spread;
 			}
 			updateProgress(1, 1);
+			
 		} catch (JssApiException e) {
 			actiontarget.setText("There was an error while processing app updates.");
 			return false;

@@ -6,17 +6,26 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.scene.text.Text;
 import javafx.scene.control.Button;
+import java.util.List;
 
 public class JssApiResponseHandler implements EventHandler<WorkerStateEvent> {
 
 	private JssApi jssApi;
 	private Text actiontarget;
 	private Button button;
+	private List<Integer> appIdList;
 	
 	public JssApiResponseHandler(JssApi jssApi, Text actiontarget, Button button) {
 		this.jssApi = jssApi;
 		this.actiontarget = actiontarget;
 		this.button = button;
+	}
+	
+	public JssApiResponseHandler(JssApi jssApi, Text actiontarget, Button button, List<Integer> appIdList) {
+		this.jssApi = jssApi;
+		this.actiontarget = actiontarget;
+		this.button = button;
+		this.appIdList = appIdList;
 	}
 	
 	@Override

@@ -42,11 +42,11 @@ public class TimeFrameSchedulerService extends Service<Boolean> {
 		scheduler.setOnSucceeded(ex -> {
 			System.out.println("App Scheduling has completed.");
 			System.out.println("TimeFrameSchedulerService has succeeded.");
-			appIdList.removeAll(appIdList);
+			appIdList.clear();
 			button.setDisable(false);
 			actiontarget.setText("Done scheduling apps.");
 		});
-		scheduler.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget, button));
+		scheduler.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget, button, appIdList	));
 	}
 
 	@Override
