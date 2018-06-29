@@ -47,7 +47,7 @@ public class TimeFrameSchedulerService extends Service<Boolean> {
 			button.setDisable(false);
 			actiontarget.setText("Done scheduling apps.");
 		});
-		scheduler.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget, button, appIdList	));
+		scheduler.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget, button));
 	}
 
 	@Override

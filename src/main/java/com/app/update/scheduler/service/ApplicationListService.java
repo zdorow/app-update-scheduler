@@ -2,21 +2,19 @@ package com.app.update.scheduler.service;
 
 import java.util.List;
 
-import com.app.update.scheduler.option.AppUpdateSchedulerOption;
 import com.app.update.scheduler.applicationlistget.ApplicationListGet;
 import com.app.update.scheduler.eventhandler.JssApiResponseHandler;
 import com.app.update.scheduler.jamfpro.api.JssApi;
-import java.util.logging.Logger;
+import com.app.update.scheduler.option.AppUpdateSchedulerOption;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.text.Text;
 
 public class ApplicationListService extends Service<List<Integer>> {
-    private static final Logger LOG = Logger.getLogger(ApplicationListService.class.getName());
 	
 	private final ApplicationListGet applicationListGet;
 	
@@ -33,9 +31,9 @@ public class ApplicationListService extends Service<List<Integer>> {
 			List<Integer> appIdList = applicationListGet.getValue();
 			System.out.println(appIdList);
 			
-			new TimeFrameSchedulerService(jssApi, appIdList, actiontarget, timeFrameStartOptions, timeFrameEndOptions,
-										schedulerOption, progressBar, button).start();
-			button.setDisable(false);
+			// Since ApplicationListService and TimeFrameSchedulerService are defined as two separate services, we should not be embedding
+			// the latter inside the former. Let's try to find a way to either consolidate these or separate them out in the future.
+			new TimeFrameSchedulerService(jssApi, appIdList, actiontarget, timeFrameStartOptions, timeFrameEndOptions, schedulerOption, progressBar, button).start();
 		});
 		
 		applicationListGet.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget, button));
