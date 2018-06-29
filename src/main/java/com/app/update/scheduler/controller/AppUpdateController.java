@@ -1,13 +1,17 @@
 package com.app.update.scheduler.controller;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+//import com.app.update.scheduler.applicationlistget.ApplicationListGet;
+import com.app.update.scheduler.eventhandler.JssApiResponseHandler;
 import com.app.update.scheduler.jamfpro.api.JssApi;
 import com.app.update.scheduler.jamfpro.api.JssApi.FORMAT;
 import com.app.update.scheduler.option.AppUpdateSchedulerOption;
 import com.app.update.scheduler.option.TimeFrame;
 import com.app.update.scheduler.service.ApplicationListService;
+import com.app.update.scheduler.service.TimeFrameSchedulerService;
 
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -68,7 +72,6 @@ public class AppUpdateController implements Initializable {
 		AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(appSchedulerOptions.getValue());
 	
 		JssApi jssApi = new JssApi(jamfProServerUrl.getText(), userName.getText(), password.getText(), FORMAT.XML, FORMAT.XML);
-		
 		try {
 			new ApplicationListService(jssApi, actiontarget, progressBar, button, timeFrameStartOptions, timeFrameEndOptions, schedulerOption).start();
 			System.out.println("ApplicationListService has STARTED.");
