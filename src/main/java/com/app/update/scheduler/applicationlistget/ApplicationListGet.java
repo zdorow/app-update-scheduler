@@ -40,6 +40,8 @@ public class ApplicationListGet extends Task<List<Integer>> {
 			MobileDeviceApplication application = JaxbObjectConverter.unmarshall(MobileDeviceApplication.class, applicationString);
 
 			updateProgress(count, mobileDeviceApplications.getMobileDeviceApplicationList().size());
+			Double percent = (double) count/mobileDeviceApplications.getMobileDeviceApplicationList().size()*100;
+			actiontarget.setText( percent.intValue() + "%");
 
 			count++;
 

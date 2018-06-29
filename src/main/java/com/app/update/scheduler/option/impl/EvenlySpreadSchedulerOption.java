@@ -40,6 +40,8 @@ public class EvenlySpreadSchedulerOption extends Task<Boolean> {
 				updateProgress(count, appIdList.size());
                 count++;
 				startTime += spread;
+				Double percent = (double) count/appIdList.size()*100;
+				actiontarget.setText( percent.intValue() + "%");
 			}
                 updateProgress(1, 1);
 		} catch (JssApiException e) {

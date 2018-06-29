@@ -47,9 +47,11 @@ public class TimeFrameSchedulerOption extends Task<Boolean> {
 				updateProgress(count, appIdList.size());
 				count++;
 				startTime += spread;
+				Double percent = (double) count/appIdList.size()*100;
+				actiontarget.setText( percent.intValue() + "%");
 			}
 			updateProgress(1, 1);
-			
+			appIdList.clear();
 		} catch (JssApiException e) {
 			actiontarget.setText("There was an error while processing app updates.");
 			return false;
