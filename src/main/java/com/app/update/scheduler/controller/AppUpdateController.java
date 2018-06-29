@@ -71,8 +71,8 @@ public class AppUpdateController implements Initializable {
 
 		AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(appSchedulerOptions.getValue());
 	
-		//JssApi jssApi = new JssApi(jamfProServerUrl.getText(), userName.getText(), password.getText(), FORMAT.XML, FORMAT.XML);
-		JssApi jssApi = new JssApi("https://zdorow.jamfcloud.com", "Eauk", "jamf1234", FORMAT.XML, FORMAT.XML);
+		JssApi jssApi = new JssApi(jamfProServerUrl.getText(), userName.getText(), password.getText(), FORMAT.XML, FORMAT.XML);
+		J
 		try {
 			new ApplicationListService(jssApi, actiontarget, progressBar, button, timeFrameStartOptions, timeFrameEndOptions, schedulerOption).start();
 			System.out.println("ApplicationListService has STARTED.");
