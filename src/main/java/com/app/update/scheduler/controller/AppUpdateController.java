@@ -1,16 +1,13 @@
 package com.app.update.scheduler.controller;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
-import com.app.update.scheduler.eventhandler.JssApiResponseHandler;
 import com.app.update.scheduler.jamfpro.api.JssApi;
 import com.app.update.scheduler.jamfpro.api.JssApi.FORMAT;
 import com.app.update.scheduler.option.AppUpdateSchedulerOption;
 import com.app.update.scheduler.option.TimeFrame;
 import com.app.update.scheduler.service.ApplicationListService;
-import com.app.update.scheduler.service.TimeFrameSchedulerService;
 
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -63,41 +60,18 @@ public class AppUpdateController implements Initializable {
 
 	@FXML
 	protected void handleSubmitButtonAction(ActionEvent event) {
-		// Clear any existing text
+		// Clear any existing text, disable the button and activate the progress bar
 		actiontarget.setText("");
 		button.setDisable(true);
 		progressBar.setVisible(true);
 
 		AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(appSchedulerOptions.getValue());
+	
 		JssApi jssApi = new JssApi(jamfProServerUrl.getText(), userName.getText(), password.getText(), FORMAT.XML, FORMAT.XML);
-
+		
 		try {
-			ApplicationListService appListService = new ApplicationListService(jssApi, actiontarget, progressBar);
-
-			appListService.setOnSucceeded(e -> {
-				System.out.println("ApplicationListService has succeeded.");
-
-				List<Integer> appIdList = appListService.getValue();
-				System.out.println(appIdList);
-				TimeFrameSchedulerService timeFrameService = new TimeFrameSchedulerService(jssApi, appIdList, actiontarget, timeFrameStartOptions, timeFrameEndOptions, schedulerOption, progressBar);
-				timeFrameService.setOnSucceeded(ex -> {
-					System.out.println("TimeFrameSchedulerService has succeeded.");
-					button.setDisable(false);
-				});
-				timeFrameService.setOnFailed(ex -> {
-					System.out.println("TimeFrameSchedulerService has been stopped for no time frame set.");
-					button.setDisable(false);
-				});
-				timeFrameService.start();
-
-			});
-
-			appListService.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget));
-			appListService.setOnFailed(ex -> {
-				button.setDisable(false);
-			});
-			appListService.start();
-
+			new ApplicationListService(jssApi, actiontarget, progressBar, button, timeFrameStartOptions, timeFrameEndOptions, schedulerOption).start();
+			System.out.println("ApplicationListService has STARTED.");
 		} catch(Exception e){
 			actiontarget.setText("Something really went wrong. Please file an issue on Github.");
 		}
