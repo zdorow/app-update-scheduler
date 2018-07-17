@@ -41,7 +41,7 @@ public class ApplicationListGet extends Task<List<Integer>> {
 
 			updateProgress(count, mobileDeviceApplications.getMobileDeviceApplicationList().size());
 			Double percent = (double) count/mobileDeviceApplications.getMobileDeviceApplicationList().size()*100;
-			actiontarget.setText( percent.intValue() + "%");
+			actiontarget.setText( percent.intValue() + "%" );
 
 			count++;
 

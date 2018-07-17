@@ -1,13 +1,12 @@
 package com.app.update.scheduler.controller.validator;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.app.update.scheduler.controller.form.AppUpdateForm;
 import com.app.update.scheduler.option.AppUpdateSchedulerOption;
+import org.apache.commons.lang3.StringUtils;
 
 public class AppUpdateValidator {
 
-	private AppUpdateForm appUpdateForm;
+	private final AppUpdateForm appUpdateForm;
 	private int errorCount;
 	
 	public AppUpdateValidator(AppUpdateForm appUpdateForm) {
@@ -16,29 +15,29 @@ public class AppUpdateValidator {
 	
 	public void validate() {
 		if (StringUtils.isEmpty(appUpdateForm.getJamfProServerUrl().getText())) {
-			markError("Jamf Pro Server URL may not be empty");
+			markError("Please input the URL of the Jamf PRO server");
 			return;
 		}
 		
 		if (StringUtils.isEmpty(appUpdateForm.getUserName().getText())) {
-			markError("Jamf Pro User Name may not be empty");
+			markError("Please enter your Jamf PRO username");
 			return;
 		}
 		
 		if (StringUtils.isEmpty(appUpdateForm.getPassword().getText())) {
-			markError("Jamf Pro Password may not be empty");
+			markError("Please enter your password");
 			return;
 		}
 		
 		AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(appUpdateForm.getAppSchedulerOptions().getValue());
 		if (schedulerOption == AppUpdateSchedulerOption.TimeInterval) {
 			if (StringUtils.isEmpty(appUpdateForm.getTimeFrameStartOptions().getValue())) {
-				markError("Scheduling Timeframe Start Time may not be empty");
+				markError("Please select a Start Time");
 				return;
 			}
 			
 			if (StringUtils.isEmpty(appUpdateForm.getTimeFrameEndOptions().getValue())) {
-				markError("Scheduling Timeframe End Time may not be empty");
+				markError("Please select an End Time");
 				return;
 			}
 		}

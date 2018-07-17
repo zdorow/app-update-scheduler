@@ -1,5 +1,6 @@
 package com.app.update.scheduler.service;
 
+import com.app.update.scheduler.controller.form.AppUpdateForm;
 import com.app.update.scheduler.eventhandler.JssApiResponseHandler;
 import com.app.update.scheduler.jamfpro.api.JssApi;
 import com.app.update.scheduler.option.AppUpdateSchedulerOption;
@@ -10,10 +11,10 @@ import java.util.List;
 import java.util.logging.Logger;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.text.Text;
-import javafx.scene.control.Button;
 
 public class TimeFrameSchedulerService extends Service<Boolean> {
     private static final Logger LOG = Logger.getLogger(TimeFrameSchedulerService.class.getName());
@@ -21,7 +22,7 @@ public class TimeFrameSchedulerService extends Service<Boolean> {
 	private Task<Boolean> scheduler;
 	
 	public TimeFrameSchedulerService(JssApi jssApi, List<Integer> appIdList, Text actiontarget, ComboBox<String> timeFrameStartOptions, ComboBox<String> timeFrameEndOptions, 
-			AppUpdateSchedulerOption schedulerOption, ProgressBar progressBar, Button button) {
+			AppUpdateSchedulerOption schedulerOption, ProgressBar progressBar, Button button, AppUpdateForm appUpdateForm) {
 		
 		switch (schedulerOption) {
 		case EvenlySpread:
@@ -47,7 +48,7 @@ public class TimeFrameSchedulerService extends Service<Boolean> {
 			button.setDisable(false);
 			actiontarget.setText("Done scheduling apps.");
 		});
-		scheduler.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget, button));
+		scheduler.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget, button, appUpdateForm));
 	}
 
 	@Override

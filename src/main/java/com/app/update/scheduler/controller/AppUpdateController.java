@@ -69,16 +69,19 @@ public class AppUpdateController implements Initializable {
 		
 		AppUpdateForm appUpdateForm = new AppUpdateForm(jamfProServerUrl, userName, password, appSchedulerOptions, timeFrameLabel, timeFrameOptions, timeFrameStartOptions, 
 				timeFrameEndOptions, actiontargetPane, actiontarget, button, progressBar);
-		AppUpdateValidator appUpdateValidator = new AppUpdateValidator(appUpdateForm);
-		
-		appUpdateValidator.validate();
-		
+                
+		AppUpdateValidator appUpdateValidator = new AppUpdateValidator(appUpdateForm);		
+		appUpdateValidator.validate();		
 		if (appUpdateValidator.hasErrors()) {
 			return;
 		}
 		
 		// Clear any existing text, disable the button and activate the progress bar
-		actiontarget.setText("");
+//		actiontarget.setText("");
+                appUpdateForm.getActiontargetPane().getStyleClass().clear();
+                appUpdateForm.getActiontargetPane().getStyleClass().add("alert");
+		appUpdateForm.getActiontargetPane().getStyleClass().add("alert-success");
+		appUpdateForm.getActiontarget().setText("");
 		button.setDisable(true);
 		progressBar.setVisible(true);
 		
@@ -86,7 +89,7 @@ public class AppUpdateController implements Initializable {
 	
 		JssApi jssApi = new JssApi(jamfProServerUrl.getText(), userName.getText(), password.getText(), FORMAT.XML, FORMAT.XML);
 		try {
-			new ApplicationListService(jssApi, actiontarget, progressBar, button, timeFrameStartOptions, timeFrameEndOptions, schedulerOption).start();
+			new ApplicationListService(jssApi, actiontarget, progressBar, button, timeFrameStartOptions, timeFrameEndOptions, schedulerOption, appUpdateForm).start();
 			System.out.println("ApplicationListService has STARTED.");
 		} catch(Exception e){
 			actiontarget.setText("Something really went wrong. Please file an issue on Github.");

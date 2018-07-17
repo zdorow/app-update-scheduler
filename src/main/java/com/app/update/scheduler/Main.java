@@ -16,9 +16,10 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/view/app_update_schedule.fxml"));
         
-        Scene scene = new Scene(root, 475, 325);
+        Scene scene = new Scene(root, 500, 325);
         scene.getStylesheets().add("bootstrapfx.css");
-        
+ 
+        primaryStage.setResizable(false);
         primaryStage.setTitle("App Update Scheduler");
         primaryStage.setScene(scene);
         primaryStage.show();
