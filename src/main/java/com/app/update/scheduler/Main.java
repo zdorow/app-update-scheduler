@@ -14,14 +14,23 @@ public class Main extends Application {
 
 	@Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/view/app_update_schedule.fxml"));
         
-        Scene scene = new Scene(root, 500, 325);
+        Parent root = FXMLLoader.load(getClass().getResource("/view/app_update_schedule.fxml"));
+        root.setStyle("-fx-padding: 10;" +
+        		"-fx-border-style: solid centered;" +
+        		"-fx-border-width: 10;" +
+        		"-fx-border-insets: 1;" +
+        		"-fx-border-radius: 3;" +
+        		"-fx-border-color: white;" +
+        		"-fx-background-color: rgb(217, 219, 221);");
+        
+        Scene scene = new Scene(root);
         scene.getStylesheets().add("bootstrapfx.css");
  
         primaryStage.setResizable(false);
-        primaryStage.setTitle("App Update Scheduler");
+        primaryStage.setTitle("The App Update Scheduler");
         primaryStage.setScene(scene);
+        primaryStage.sizeToScene();
         primaryStage.show();
     }
 }
