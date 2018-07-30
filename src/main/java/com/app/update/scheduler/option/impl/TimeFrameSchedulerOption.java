@@ -36,6 +36,7 @@ public class TimeFrameSchedulerOption extends Task<Boolean> {
 			int count=0;
 			double spreadBeforeMidnight, spreadAfterMidnight;
 			double startTime = timeFrameStart.calculateNumberOfSecondsFromMidnight();
+                        double timeUntilMidnight = 86400 - startTime;
 			double endTime = timeFrameEnd.calculateNumberOfSecondsFromMidnight();
 			actiontarget.setText("Updating application update schedules");
 			
@@ -43,16 +44,20 @@ public class TimeFrameSchedulerOption extends Task<Boolean> {
 			{
 			System.out.println("Endtime less than start detected. Running compensation sequence");
 			double midnight=0.0;
-			int halfListTotal=(appIdList.size()/2);
-			List<Integer> appIdListBeforeMidnight = appIdList.subList(0, halfListTotal);
-			List<Integer> appIdListAfterMidnight = appIdList.subList(halfListTotal, appIdList.size());;
+                        double calcualtePercentageList = timeUntilMidnight / 86400;
+                        System.out.println("Percentage of list to be allocated before midnight" + calcualtePercentageList * 100);
+			double percentListTotal=(Math.round(appIdList.size() * calcualtePercentageList));
+
+			List<Integer> appIdListBeforeMidnight = appIdList.subList(0, (int)percentListTotal);
+			List<Integer> appIdListAfterMidnight = appIdList.subList((int)percentListTotal, appIdList.size());
 			
-			spreadBeforeMidnight = endTime / new Double(appIdListBeforeMidnight.size());
+			spreadBeforeMidnight = timeUntilMidnight / new Double(appIdListBeforeMidnight.size());
 			spreadAfterMidnight = endTime / new Double(appIdListAfterMidnight.size());
 			
 			for (int id : appIdListBeforeMidnight) {
 				jssApi.put("mobiledeviceapplications/id/" + id, String.format(updateXml, Math.round(startTime)));
-
+                                System.out.println("Spread Before midnight:" + spreadBeforeMidnight);
+                                System.out.println("Start Time:" + startTime);
 				updateProgress(count, appIdListBeforeMidnight.size());
 				count++;
 				startTime += spreadBeforeMidnight;
