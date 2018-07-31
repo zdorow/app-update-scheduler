@@ -44,7 +44,8 @@ public class TimeFrameSchedulerOption extends Task<Boolean> {
 			System.out.println("Endtime less than start detected. Running compensation sequence");
 			double midnight = 0.0;
                         double timeUntilMidnight = 86400 - startTime;
-                        double calcualtePercentageList = timeUntilMidnight / (startTime + endTime);
+                        System.out.println(startTime);
+                        double calcualtePercentageList = timeUntilMidnight / (timeUntilMidnight + endTime);
                         System.out.println("Percentage of list to be allocated before midnight " + calcualtePercentageList * 100);
 			double percentListTotal=(Math.round(appIdList.size() * calcualtePercentageList));
 
