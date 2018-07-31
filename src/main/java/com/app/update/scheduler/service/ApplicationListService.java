@@ -3,6 +3,7 @@ package com.app.update.scheduler.service;
 import java.util.List;
 
 import com.app.update.scheduler.applicationlistget.ApplicationListGet;
+import com.app.update.scheduler.controller.form.AppUpdateForm;
 import com.app.update.scheduler.eventhandler.JssApiResponseHandler;
 import com.app.update.scheduler.jamfpro.api.JssApi;
 import com.app.update.scheduler.option.AppUpdateSchedulerOption;
@@ -19,7 +20,7 @@ public class ApplicationListService extends Service<List<Integer>> {
 	private final ApplicationListGet applicationListGet;
 	
 	public ApplicationListService(JssApi jssApi, Text actiontarget, ProgressBar progressBar, Button button,
-			ComboBox<String> timeFrameStartOptions, ComboBox<String> timeFrameEndOptions, AppUpdateSchedulerOption schedulerOption) {
+			ComboBox<String> timeFrameStartOptions, ComboBox<String> timeFrameEndOptions, AppUpdateSchedulerOption schedulerOption, AppUpdateForm appUpdateForm) {
 		this.applicationListGet = new ApplicationListGet(jssApi, actiontarget, progressBar);
 		
 		progressBar.progressProperty().bind(applicationListGet.progressProperty());
@@ -33,10 +34,10 @@ public class ApplicationListService extends Service<List<Integer>> {
 			
 			// Since ApplicationListService and TimeFrameSchedulerService are defined as two separate services, we should not be embedding
 			// the latter inside the former. Let's try to find a way to either consolidate these or separate them out in the future.
-			new TimeFrameSchedulerService(jssApi, appIdList, actiontarget, timeFrameStartOptions, timeFrameEndOptions, schedulerOption, progressBar, button).start();
+			new TimeFrameSchedulerService(jssApi, appIdList, actiontarget, timeFrameStartOptions, timeFrameEndOptions, schedulerOption, progressBar, button, appUpdateForm).start();
 		});
 		
-		applicationListGet.setOnFailed(new JssApiResponseHandler(jssApi, actiontarget, button));
+		applicationListGet.setOnFailed(new JssApiResponseHandler(jssApi, appUpdateForm));
 	}
 
 	@Override
@@ -47,5 +48,4 @@ public class ApplicationListService extends Service<List<Integer>> {
 	public ApplicationListGet getApplicationListGet() {
 		return applicationListGet;
 	}
-	
 }

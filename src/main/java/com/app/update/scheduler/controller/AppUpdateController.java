@@ -1,17 +1,15 @@
 package com.app.update.scheduler.controller;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
-//import com.app.update.scheduler.applicationlistget.ApplicationListGet;
-import com.app.update.scheduler.eventhandler.JssApiResponseHandler;
+import com.app.update.scheduler.controller.form.AppUpdateForm;
+import com.app.update.scheduler.controller.validator.AppUpdateValidator;
 import com.app.update.scheduler.jamfpro.api.JssApi;
 import com.app.update.scheduler.jamfpro.api.JssApi.FORMAT;
 import com.app.update.scheduler.option.AppUpdateSchedulerOption;
 import com.app.update.scheduler.option.TimeFrame;
 import com.app.update.scheduler.service.ApplicationListService;
-import com.app.update.scheduler.service.TimeFrameSchedulerService;
 
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -25,6 +23,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 
 
 public class AppUpdateController implements Initializable {
@@ -52,6 +51,9 @@ public class AppUpdateController implements Initializable {
 
 	@FXML
 	private ComboBox<String> timeFrameEndOptions;
+	
+	@FXML
+	private TextFlow actiontargetPane;
 
 	@FXML
 	private Text actiontarget;
@@ -64,16 +66,29 @@ public class AppUpdateController implements Initializable {
 
 	@FXML
 	protected void handleSubmitButtonAction(ActionEvent event) {
+		
+		AppUpdateForm appUpdateForm = new AppUpdateForm(jamfProServerUrl, userName, password, appSchedulerOptions, timeFrameLabel, timeFrameOptions, timeFrameStartOptions, 
+				timeFrameEndOptions, actiontargetPane, actiontarget, button, progressBar);
+                
+		AppUpdateValidator appUpdateValidator = new AppUpdateValidator(appUpdateForm);		
+		appUpdateValidator.validate();		
+		if (appUpdateValidator.hasErrors()) {
+			return;
+		}
+		
 		// Clear any existing text, disable the button and activate the progress bar
+		actiontargetPane.getStyleClass().clear();
+		actiontargetPane.getStyleClass().add("alert");
+		actiontargetPane.getStyleClass().add("alert-success");
 		actiontarget.setText("");
 		button.setDisable(true);
 		progressBar.setVisible(true);
-
+		
 		AppUpdateSchedulerOption schedulerOption = AppUpdateSchedulerOption.fromDisplayText(appSchedulerOptions.getValue());
 	
 		JssApi jssApi = new JssApi(jamfProServerUrl.getText(), userName.getText(), password.getText(), FORMAT.XML, FORMAT.XML);
 		try {
-			new ApplicationListService(jssApi, actiontarget, progressBar, button, timeFrameStartOptions, timeFrameEndOptions, schedulerOption).start();
+			new ApplicationListService(jssApi, actiontarget, progressBar, button, timeFrameStartOptions, timeFrameEndOptions, schedulerOption, appUpdateForm).start();
 			System.out.println("ApplicationListService has STARTED.");
 		} catch(Exception e){
 			actiontarget.setText("Something really went wrong. Please file an issue on Github.");
